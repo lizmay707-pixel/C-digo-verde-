@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simón Dice: Eco-Pausa Activa</title>
+  <title>Operación Código Verde</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1b2e24; /* Color verde oscuro ecológico */
+      background: #1b2e24; /* Verde oscuro ecológico */
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -27,11 +27,11 @@
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     }
-    h1 { color: #aacc00; margin-bottom: 10px; }
+    h1 { color: #aacc00; margin-bottom: 10px; font-size: 32px; }
     .score { font-size: 20px; color: #ffb703; font-weight: bold; margin-bottom: 20px; }
     
     #action-display {
-      min-height: 120px;
+      min-height: 140px;
       background: #1b2e24;
       border-radius: 15px;
       display: flex;
@@ -44,8 +44,8 @@
       transition: all 0.3s ease;
     }
     #action-display.showing { border-color: #aacc00; background: #2d4a3e; }
-    #action-type { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #aacc00; margin-bottom: 5px; font-weight: bold; }
-    #action-text { font-size: 24px; font-weight: bold; }
+    #action-type { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #aacc00; margin-bottom: 8px; font-weight: bold; }
+    #action-text { font-size: 24px; font-weight: bold; line-height: 1.4; }
 
     .controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
     button {
@@ -69,7 +69,7 @@
 <body>
 
 <div class="container">
-  <h1>Simón Dice: Eco-Pausa</h1>
+  <h1>Operación Código Verde</h1>
   <div class="score">Ronda Actual: <span id="round-num">0</span></div>
 
   <div id="action-display">
@@ -78,23 +78,22 @@
   </div>
 
   <div class="controls">
-    <button class="btn-start" id="start-btn" onclick="startGame()">Iniciar Juego</button>
+    <button class="btn-start" id="start-btn" onclick="startGame()">Iniciar Misión</button>
     <button class="btn-fail" id="fail-btn" onclick="playerFailed()">❌ Me equivoqué</button>
     <button class="btn-done" id="done-btn" onclick="playerDone()">✅ ¡Hecho!</button>
   </div>
 
   <div class="instructions">
-    <strong>¿Cómo jugar esta versión ecológica?</strong>
+    <strong>¿Cómo jugar?</strong>
     <ul>
-      <li><strong>Secuencia Verde:</strong> Simón te dará retos de movimiento físico mezclados con misiones de cuidado ambiental o reciclaje.</li>
-      <li><strong>Acumula y repite:</strong> En cada ronda debes repetir **toda la secuencia desde el paso 1** en el orden correcto.</li>
+      <li><strong>Secuencia Verde:</strong> Simón mostrará retos de movimiento físico mezclados con misiones ecológicas uno por uno.</li>
+      <li><strong>Lectura pausada:</strong> Ahora cuentas con más tiempo para leer detalladamente cada una de las misiones que aparezcan.</li>
       <li><strong>¡Acción Real!:</strong> Ve a buscar los elementos de reciclaje o haz las acciones ambientales en tu espacio y pulsa <strong>"¡Hecho!"</strong> para avanzar.</li>
     </ul>
   </div>
 </div>
 
 <script>
-  // Banco de retos actualizado con enfoque 100% ambiental y ecológico
   const challengeBank = [
     { type: "Movimiento Físico 🧘", text: "Haz 3 saltos de tijera (jumping jacks) para activar tu energía" },
     { type: "Movimiento Físico 🧘", text: "Estira los brazos como si fueras un árbol creciendo hacia el sol por 5 segundos" },
@@ -160,7 +159,7 @@
         doneBtn.style.display = 'inline-block';
         failBtn.style.display = 'inline-block';
       }
-    }, 3500); // 3.5 segundos por paso para dar tiempo a leer el reto ecológico
+    }, 6000); /* CAMBIO: 6000ms = 6 segundos por reto para una lectura óptima */
   }
 
   function playerDone() {
@@ -169,8 +168,8 @@
 
   function playerFailed() {
     alert(`¡Buen intento! Llegaste a la ronda ${currentRound}. ¡Gracias por cuidar el planeta y tu cuerpo!`);
-    typeEl.innerText = "Juego Terminado";
-    textEl.innerText = "¿Quieres volver a jugar?";
+    typeEl.innerText = "Misión Terminada";
+    textEl.innerText = "¿Quieres iniciar una nueva operación?";
     roundEl.innerText = "0";
     startBtn.style.display = 'inline-block';
     doneBtn.style.display = 'none';
