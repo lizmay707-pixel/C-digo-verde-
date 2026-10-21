@@ -87,8 +87,8 @@
     <strong>¿Cómo jugar?</strong>
     <ul>
       <li><strong>Secuencia Verde:</strong> Simón mostrará retos de movimiento físico mezclados con misiones ecológicas uno por uno.</li>
-      <li><strong>Lectura pausada:</strong> Ahora cuentas con más tiempo para leer detalladamente cada una de las misiones que aparezcan.</li>
-      <li><strong>¡Acción Real!:</strong> Ve a buscar los elementos de reciclaje o haz las acciones ambientales en tu espacio y pulsa <strong>"¡Hecho!"</strong> para avanzar.</li>
+      <li><strong>Lectura pausada:</strong> Cuentas con 6 segundos para leer detalladamente cada misión.</li>
+      <li><strong>¡Acción Real!:</strong> Realiza las misiones físicas o ambientales en tu espacio y pulsa <strong>"¡Hecho!"</strong> para avanzar. ¡El juego ya no repetirá retos seguidos!</li>
     </ul>
   </div>
 </div>
@@ -103,15 +103,16 @@
     
     { type: "Acción Ambiental 🌱", text: "Trae un residuo limpio que se pueda reciclar (plástico, papel o cartón)" },
     { type: "Acción Ambiental 🌱", text: "Muestra una planta cercana o asómate a la ventana y observa un árbol" },
-    { type: "Acción Ambiental 🌱", text: "Trae un termo, botella reutilizable" },
+    { type: "Acción Ambiental 🌱", text: "Trae un termo, botella reutilizable o vaso de vidrio" },
     { type: "Acción Ambiental 🌱", text: "Verifica que no haya luces encendidas innecesariamente en tu espacio" },
     { type: "Acción Ambiental 🌱", text: "Trae una bolsa de tela o ecológica de las que usas para las compras" },
-    { type: "Acción Ambiental 🌱", text: "Que busques un envase de plástico con el símbolo de reciclaje" },
-    { type: "Acción Ambiental 🌱", text: "Trae una fruta o un alimento natural (no procesado) si tienes cerca" }
+    { type: "Acción Ambiental 🌱", text: "Imita el sonido o movimiento de tu animal favorito que debemos proteger" },
+    { type: "Acción Ambiental 🌱", text: "busca una fruta o verdura en la cocina y di por qué es saludable para ti y el planeta" }
   ];
 
   let sequence = [];
   let currentRound = 0;
+  let lastChallenge = null; // Variable para evitar repeticiones directas
 
   const typeEl = document.getElementById('action-type');
   const textEl = document.getElementById('action-text');
@@ -124,6 +125,7 @@
   function startGame() {
     sequence = [];
     currentRound = 0;
+    lastChallenge = null;
     startBtn.style.display = 'none';
     nextRound();
   }
@@ -135,7 +137,13 @@
     doneBtn.style.display = 'none';
     failBtn.style.display = 'none';
 
-    const randomChallenge = challengeBank[Math.floor(Math.random() * challengeBank.length)];
+    // Bucle para asegurar que el reto NUEVO no sea igual al ANTERIOR inmediato
+    let randomChallenge;
+    do {
+      randomChallenge = challengeBank[Math.floor(Math.random() * challengeBank.length)];
+    } while (randomChallenge === lastChallenge);
+
+    lastChallenge = randomChallenge; // Guardamos el nuevo reto como referencia
     sequence.push(randomChallenge);
 
     playSequence();
@@ -159,7 +167,7 @@
         doneBtn.style.display = 'inline-block';
         failBtn.style.display = 'inline-block';
       }
-    }, 6000); /* CAMBIO: 6000ms = 5 segundos por reto para una lectura óptima */
+    }, 6000);
   }
 
   function playerDone() {
