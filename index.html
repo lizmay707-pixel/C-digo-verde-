@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1b2e24; /* Verde oscuro ecológico */
+      background: #1b2e24; 
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -74,21 +74,21 @@
 
   <div id="action-display">
     <div id="action-type">Presiona iniciar</div>
-    <div id="action-text">¿Listo para el eco-reto?</div>
+    <div id="action-text">¿Listo para el eco-reto de memoria?</div>
   </div>
 
   <div class="controls">
     <button class="btn-start" id="start-btn" onclick="startGame()">Iniciar Misión</button>
-    <button class="btn-fail" id="fail-btn" onclick="playerFailed()">❌ Me equivoqué</button>
-    <button class="btn-done" id="done-btn" onclick="playerDone()">✅ ¡Hecho!</button>
+    <button class="btn-fail" id="fail-btn" onclick="playerFailed()">❌ Olvidé un paso</button>
+    <button class="btn-done" id="done-btn" onclick="playerDone()">✅ ¡Hecho de memoria!</button>
   </div>
 
   <div class="instructions">
-    <strong>¿Cómo jugar?</strong>
+    <strong>Reglas de la Operación (Modo Memoria Estricta):</strong>
     <ul>
-      <li><strong>Secuencia Verde:</strong> Simón mostrará retos de movimiento físico mezclados con misiones ecológicas uno por uno.</li>
-      <li><strong>Lectura pausada:</strong> Cuentas con 6 segundos para leer detalladamente cada misión.</li>
-      <li><strong>¡Acción Real!:</strong> Realiza las misiones físicas o ambientales en tu espacio y pulsa <strong>"¡Hecho!"</strong> para avanzar. ¡El juego ya no repetirá retos seguidos!</li>
+      <li><strong>Observa el nuevo paso:</strong> El juego te mostrará únicamente el NUEVO reto de la ronda por 4 segundos.</li>
+      <li><strong>¡A ciegas!:</strong> Después, la pantalla se ocultará. Debes realizar en orden **todos los retos acumulados desde la ronda 1** confiando solo en tu memoria.</li>
+      <li><strong>¡Honestidad Verde!:</strong> Si lograste realizar toda la secuencia acumulada sin equivocarte, pulsa <strong>"¡Hecho de memoria!"</strong>. Si olvidaste algún paso anterior, pulsa <strong>"Olvidé un paso"</strong>.</li>
     </ul>
   </div>
 </div>
@@ -103,16 +103,16 @@
     
     { type: "Acción Ambiental 🌱", text: "Trae un residuo limpio que se pueda reciclar (plástico, papel o cartón)" },
     { type: "Acción Ambiental 🌱", text: "Muestra una planta cercana o asómate a la ventana y observa un árbol" },
-    { type: "Acción Ambiental 🌱", text: "Trae un termo, botella reutilizable o vaso de vidrio" },
+    { type: "Acción Ambiental 🌱", text: "Trae un termo o botella reutilizable" },
     { type: "Acción Ambiental 🌱", text: "Verifica que no haya luces encendidas innecesariamente en tu espacio" },
     { type: "Acción Ambiental 🌱", text: "Trae una bolsa de tela o ecológica de las que usas para las compras" },
     { type: "Acción Ambiental 🌱", text: "Imita el sonido o movimiento de tu animal favorito que debemos proteger" },
-    { type: "Acción Ambiental 🌱", text: "busca una fruta o verdura en la cocina y di por qué es saludable para ti y el planeta" }
+    { type: "Acción Ambiental 🌱", text: "Busca una fruta o verdura en la cocina y di por qué es saludable para ti y el planeta" }
   ];
 
   let sequence = [];
+  let availableChallenges = [];
   let currentRound = 0;
-  let lastChallenge = null; // Variable para evitar repeticiones directas
 
   const typeEl = document.getElementById('action-type');
   const textEl = document.getElementById('action-text');
@@ -124,49 +124,51 @@
 
   function startGame() {
     sequence = [];
+    // Copiar el banco original para ir consumiendo los retos sin repetir ninguno en la partida
+    availableChallenges = [...challengeBank];
     currentRound = 0;
-    lastChallenge = null;
     startBtn.style.display = 'none';
     nextRound();
   }
 
   function nextRound() {
+    if (availableChallenges.length === 0) {
+      alert("¡Increíble! Has completado con éxito todas las misiones ecológicas de la Operación Código Verde. ¡Eres un guardián del planeta oficial!");
+      resetGame();
+      return;
+    }
+
     currentRound++;
     roundEl.innerText = currentRound;
     
     doneBtn.style.display = 'none';
     failBtn.style.display = 'none';
 
-    // Bucle para asegurar que el reto NUEVO no sea igual al ANTERIOR inmediato
-    let randomChallenge;
-    do {
-      randomChallenge = challengeBank[Math.floor(Math.random() * challengeBank.length)];
-    } while (randomChallenge === lastChallenge);
+    // Seleccionar un reto al azar, lo añadimos a la secuencia y lo eliminamos de los disponibles
+    const randomIndex = Math.floor(Math.random() * availableChallenges.length);
+    const newChallenge = availableChallenges.splice(randomIndex, 1)[0];
+    sequence.push(newChallenge);
 
-    lastChallenge = randomChallenge; // Guardamos el nuevo reto como referencia
-    sequence.push(randomChallenge);
-
-    playSequence();
+    showOnlyNewStep(newChallenge);
   }
 
-  function playSequence() {
-    let step = 0;
+  function showOnlyNewStep(challenge) {
     displayBox.classList.add('showing');
+    typeEl.innerText = `NUEVO RETO (Paso ${currentRound})`;
+    textEl.innerText = challenge.text;
     
-    const interval = setInterval(() => {
-      if (step < sequence.length) {
-        typeEl.innerText = `Simón dice (Paso ${step + 1}): ${sequence[step].type}`;
-        textEl.innerText = sequence[step].text;
-        step++;
+    // El nuevo reto se muestra solo por 4 segundos, luego se oculta para obligar a memorizar
+    setTimeout(() => {
+      displayBox.classList.remove('showing');
+      typeEl.innerText = "¡TU TURNO A CIEGAS!";
+      if (currentRound === 1) {
+        textEl.innerText = "Realiza el paso 1 que acabas de ver.";
       } else {
-        clearInterval(interval);
-        displayBox.classList.remove('showing');
-        typeEl.innerText = "¡TU TURNO!";
-        textEl.innerText = `Repite los ${sequence.length} pasos ecológicos en orden y ejecútalos en tu entorno.`;
-        
-        doneBtn.style.display = 'inline-block';
-        failBtn.style.display = 'inline-block';
+        textEl.innerText = `Realiza de memoria los ${currentRound} pasos acumulados en orden desde el primero.`;
       }
+      
+      doneBtn.style.display = 'inline-block';
+      failBtn.style.display = 'inline-block';
     }, 6000);
   }
 
@@ -175,9 +177,13 @@
   }
 
   function playerFailed() {
-    alert(`¡Buen intento! Llegaste a la ronda ${currentRound}. ¡Gracias por cuidar el planeta y tu cuerpo!`);
-    typeEl.innerText = "Misión Terminada";
-    textEl.innerText = "¿Quieres iniciar una nueva operación?";
+    alert(`Misión Terminada. Llegaste hasta la ronda ${currentRound}. ¡Sigue entrenando tu mente para proteger el medio ambiente!`);
+    resetGame();
+  }
+
+  function resetGame() {
+    typeEl.innerText = "Operación Finalizada";
+    textEl.innerText = "¿Deseas iniciar una nueva misión?";
     roundEl.innerText = "0";
     startBtn.style.display = 'inline-block';
     doneBtn.style.display = 'none';
